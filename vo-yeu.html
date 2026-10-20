@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Gửi Vợ Sắp Cưới Của Anh ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; min-height: 100%;
+      background: #090105;
+      font-family: 'Quicksand', sans-serif; color: #fff5f8;
+      overflow-x: hidden; scroll-behavior: smooth;
+    }
+
+    /* Nền Canvas Trái Tim 3D cố định phía sau khi cuộn */
+    canvas#bgCanvas {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 1; pointer-events: none;
+    }
+
+    /* Màn hình chạm mở đầu */
+    #startScreen {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: radial-gradient(circle at center, #260614 0%, #060103 100%);
+      transition: opacity 0.9s ease, visibility 0.9s;
+      cursor: pointer; text-align: center; padding: 24px;
+    }
+    .ring-icon {
+      font-size: 72px; filter: drop-shadow(0 0 25px #ff4081);
+      animation: floatBeat 1.5s infinite ease-in-out; margin-bottom: 18px;
+    }
+    @keyframes floatBeat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-8px) scale(1.15); }
+    }
+    .start-title {
+      font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: #ff9eb5;
+      text-shadow: 0 0 18px rgba(255, 64, 129, 0.8); margin-bottom: 12px;
+    }
+    .start-sub {
+      font-size: 1rem; color: #ffd1dc; opacity: 0.85;
+      animation: fadePulse 2s infinite;
+    }
+    @keyframes fadePulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+
+    /* Nội dung chính có thể cuộn dài */
+    #mainContent {
+      position: relative; z-index: 10;
+      max-width: 620px; margin: 0 auto;
+      padding: 60px 20px 100px;
+      display: none; opacity: 0; transition: opacity 1.2s ease;
+    }
+    #mainContent.visible { display: block; opacity: 1; }
+
+    /* Phần mở đầu trang */
+    .hero-box {
+      min-height: 78vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding-bottom: 40px;
+    }
+    .badge-date {
+      background: rgba(255, 64, 129, 0.2); border: 1px solid rgba(255, 158, 181, 0.45);
+      color: #ffb6c1; padding: 6px 18px; border-radius: 30px;
+      font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; margin-bottom: 18px;
+      backdrop-filter: blur(6px);
+    }
+    .hero-title {
+      font-family: 'Dancing Script', cursive; font-size: 3rem; color: #ff6f9c;
+      text-shadow: 0 0 20px rgba(255, 42, 109, 0.7); margin-bottom: 16px; line-height: 1.25;
+    }
+    .hero-desc {
+      font-size: 1.08rem; line-height: 1.7; color: #ffe4ec;
+      max-width: 480px; margin-bottom: 35px; text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+    }
+    .scroll-hint {
+      font-size: 0.9rem; color: #ff9eb5; animation: bounceDown 1.8s infinite;
+      margin-top: 15px; opacity: 0.9;
+    }
+    @keyframes bounceDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+
+    /* Các thẻ cột mốc hành trình */
+    .story-card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 130, 165, 0.25);
+      border-radius: 22px; padding: 26px 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 12px 35px rgba(20, 0, 10, 0.6);
+      transform: translateY(30px); opacity: 0;
+      transition: all 0.8s ease;
+    }
+    .story-card.appear { transform: translateY(0); opacity: 1; }
+    .card-tag {
+      display: inline-block; font-size: 0.78rem; font-weight: 700;
+      color: #ff85a2; text-transform: uppercase; letter-spacing: 1.2px;
+      margin-bottom: 8px;
+    }
+    .card-title {
+      font-family: 'Dancing Script', cursive; font-size: 1.95rem;
+      color: #ffb3c6; margin-bottom: 12px;
+    }
+    .card-text {
+      font-size: 1.02rem; line-height: 1.75; color: #fff0f5; font-weight: 500;
+    }
+
+    /* Khung bức thư dài cuối trang */
+    .letter-box {
+      background: linear-gradient(160deg, rgba(45, 8, 24, 0.85), rgba(20, 3, 10, 0.92));
+      border: 1px solid rgba(255, 158, 181, 0.4);
+      border-radius: 26px; padding: 32px 26px;
+      margin-top: 45px;
+      box-shadow: 0 15px 45px rgba(255, 42, 109, 0.22);
+      position: relative;
+    }
+    .letter-header {
+      font-family: 'Dancing Script', cursive; font-size: 2.3rem;
+      color: #ff7aa2; text-align: center; margin-bottom: 22px;
+      text-shadow: 0 0 12px rgba(255, 122, 162, 0.5);
+    }
+    .letter-p {
+      font-size: 1.05rem; line-height: 1.85; color: #fff5f8;
+      margin-bottom: 16px; min-height: 1.85em; font-weight: 500;
+    }
+    .letter-sign {
+      font-family: 'Dancing Script', cursive; font-size: 1.85rem;
+      color: #ff9eb5; text-align: right; margin-top: 24px;
+    }
+
+    /* Nút công cụ tạo QR */
+    #qrBtn {
+      position: fixed; top: 15px; right: 15px; z-index: 90;
+      background: rgba(255, 42, 109, 0.28); border: 1px solid rgba(255, 141, 161, 0.5);
+      color: #ffd1dc; padding: 8px 15px; border-radius: 30px; font-size: 0.82rem;
+      cursor: pointer; backdrop-filter: blur(6px); font-weight: 600;
+    }
+
+    /* Modal xuất Thiệp QR */
+    #qrModal {
+      position: fixed; inset: 0; z-index: 120; background: rgba(0,0,0,0.82);
+      display: none; align-items: center; justify-content: center; padding: 15px;
+    }
+    .modal-box {
+      background: #fff0f5; color: #4a1525; border-radius: 20px; padding: 22px;
+      width: 100%; max-width: 360px; text-align: center;
+      box-shadow: 0 10px 40px rgba(255,42,109,0.45);
+    }
+    .modal-box h3 { font-family: 'Dancing Script', cursive; font-size: 1.8rem; color: #d81b60; margin-bottom: 10px; }
+    .modal-box input {
+      width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid #f48fb1;
+      margin-bottom: 12px; font-size: 0.82rem; outline: none; color: #880e4f; font-weight: 600;
+    }
+    #qrCardCanvas {
+      width: 100%; max-width: 250px; border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(216,27,96,0.2); margin: 0 auto 12px; display: block;
+    }
+    .btn-group { display: flex; gap: 8px; justify-content: center; }
+    .btn-pink {
+      background: linear-gradient(135deg, #ff4081, #c2185b); color: #fff;
+      border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.85rem;
+    }
+    .btn-close {
+      background: #f8bbd0; color: #880e4f; border: none; padding: 10px 14px;
+      border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Màn hình chờ chạm mở thư -->
+  <div id="startScreen">
+    <div class="ring-icon">💍</div>
+    <div class="start-title">Gửi Vợ Sắp Cưới Của Anh</div>
+    <div class="start-sub">Chạm nhẹ vào màn hình để mở bức thư ngày 20/10 nhé ❤️</div>
+  </div>
+
+  <!-- Nút bật khung lấy mã QR (Tự ẩn khi có ?gift=1) -->
+  <button id="qrBtn">💝 Tạo Thiệp QR</button>
+
+  <!-- Canvas hạt trái tim 3D bay nền -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Nội dung cuộn dài -->
+  <div id="mainContent">
+    
+    <!-- Phần mở đầu -->
+    <div class="hero-box">
+      <div class="badge-date">✨ HAPPY WOMEN'S DAY 20/10 ✨</div>
+      <h1 class="hero-title">Gửi Người Bạn Đời<br/>Tương Lai Của Anh ❤️</h1>
+      <p class="hero-desc">
+        Ngày 20/10 năm nay thật đặc biệt với anh, vì anh không chỉ chúc mừng cô bạn gái anh thương, mà đang gửi lời yêu thương tới người vợ sắp cưới sẽ đi cùng anh suốt chặng đường dài phía trước.
+      </p>
+      <div class="scroll-hint">↓ Vuốt nhẹ xuống để đọc tiếp nhé ↓</div>
+    </div>
+
+    <!-- Cột mốc 1 -->
+    <div class="story-card">
+      <span class="card-tag">Chặng đường đã qua</span>
+      <h2 class="card-title">1. Cảm ơn em vì đã đến bên anh 🌸</h2>
+      <p class="card-text">
+        Cảm ơn em vì giữa muôn vàn bộn bề của cuộc sống, em đã xuất hiện, dịu dàng và kiên nhẫn đồng hành cùng anh. Anh vốn là người khô khan, đôi khi chỉ quen với công việc và những điều thực tế, chẳng biết nói những lời hoa mỹ mỗi ngày. Nhưng ở bên em, anh luôn tìm thấy sự bình yên ấm áp nhất.
+      </p>
+    </div>
+
+    <!-- Cột mốc 2 -->
+    <div class="story-card">
+      <span class="card-tag">Dấu mốc thiêng liêng</span>
+      <h2 class="card-title">2. Từ hai chữ "Người Yêu" đến "Người Nhà" 🏡</h2>
+      <p class="card-text">
+        Những khoảnh khắc hai bên gia đình gặp gỡ, tiếng cười nói ấm cúng và câu chuyện tương lai của hai đứa làm anh càng thêm trân trọng hiện tại. Anh hiểu rằng từ giây phút ấy, tình yêu của chúng mình đã bước sang một trang mới — chín chắn hơn, gắn kết hơn và trọn vẹn trách nhiệm.
+      </p>
+    </div>
+
+    <!-- Cột mốc 3 -->
+    <div class="story-card">
+      <span class="card-tag">Hành trình phía trước</span>
+      <h2 class="card-title">3. Sắp về chung một mái nhà 💍</h2>
+      <p class="card-text">
+        Chặng đường chuẩn bị cho tổ ấm nhỏ phía trước chắc chắn sẽ có lúc bận rộn và nhiều điều phải lo toan. Anh chỉ muốn em luôn yên tâm rằng: Dù ngoài kia có thế nào, anh vẫn sẽ luôn là điểm tựa vững vàng nhất để em dựa vào, cùng em san sẻ mọi buồn vui.
+      </p>
+    </div>
+
+    <!-- Bức thư tâm tình tự động chạy chữ khi cuộn tới -->
+    <div class="letter-box" id="letterSection">
+      <div class="letter-header">Lời Nhắn Gửi Vợ Yêu ❤️</div>
+      <div id="p1" class="letter-p"></div>
+      <div id="p2" class="letter-p"></div>
+      <div id="p3" class="letter-p"></div>
+      <div id="p4" class="letter-p"></div>
+      <div class="letter-sign" id="pSign"></div>
+    </div>
+
+  </div>
+
+  <!-- Modal xuất Thiệp QR Trái Tim -->
+  <div id="qrModal">
+    <div class="modal-box">
+      <h3>Thiệp QR Tặng Vợ Yêu ❤️</h3>
+      <input type="text" id="qrUrlInput" value="" />
+      <canvas id="qrCardCanvas" width="600" height="750"></canvas>
+      <div id="hiddenQr" style="display:none;"></div>
+      <div class="btn-group">
+        <button class="btn-pink" id="downloadQrBtn">⬇️ Tải Ảnh Thiệp QR</button>
+        <button class="btn-close" id="closeModalBtn">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Tự động ẩn nút Tạo QR khi người nhận mở link có ?gift=1
+    if (window.location.search.includes('gift=1')) {
+      document.getElementById('qrBtn').style.display = 'none';
+    }
+
+    // Tự động lấy đúng đường link hiện tại (Vercel / GitHub) điền vào ô QR
+    const cleanUrl = window.location.origin + window.location.pathname;
+    document.getElementById('qrUrlInput').value = cleanUrl + '?gift=1';
+
+    // 2. HIỆU ỨNG HẠT TRÁI TIM 3D & SAO LẤP LÁNH
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+
+    const particles = [];
+    for (let i = 0; i < 650; i++) {
+      const t = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(Math.random());
+      const hx = 16 * Math.pow(Math.sin(t), 3) * r;
+      const hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * r;
+      particles.push({
+        hx, hy,
+        x: Math.random() * W, y: Math.random() * H,
+        size: Math.random() * 2 + 0.7,
+        color: `hsl(${335 + Math.random() * 30}, 100%, ${62 + Math.random() * 25}%)`,
+        offset: Math.random() * Math.PI * 2
+      });
+    }
+
+    const sparks = [];
+    window.addEventListener('pointerdown', (e) => {
+      for (let i = 0; i < 16; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = Math.random() * 3.8 + 1.2;
+        sparks.push({
+          x: e.clientX, y: e.clientY,
+          vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+          alpha: 1, size: Math.random() * 3 + 1.5
+        });
+      }
+    });
+
+    let time = 0;
+    function animate() {
+      ctx.fillStyle = 'rgba(10, 2, 6, 0.25)';
+      ctx.fillRect(0, 0, W, H);
+      time += 0.038;
+
+      const scale = Math.min(W, H) / 44;
+      const beat = 1 + 0.07 * Math.sin(time * 2.2) + 0.03 * Math.cos(time * 4.4);
+      const scrollOffset = window.scrollY * 0.12;
+      const centerY = (H * 0.42) - Math.min(scrollOffset, H * 0.15);
+
+      particles.forEach(p => {
+        const targetX = W / 2 + p.hx * scale * beat + Math.sin(time + p.offset) * 3;
+        const targetY = centerY + p.hy * scale * beat + Math.cos(time + p.offset) * 3;
+        p.x += (targetX - p.x) * 0.08;
+        p.y += (targetY - p.y) * 0.08;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      });
+
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.x += s.vx; s.y += s.vy; s.alpha -= 0.025;
+        if (s.alpha <= 0) { sparks.splice(i, 1); continue; }
+        ctx.fillStyle = `rgba(255, 120, 165, ${s.alpha})`;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // 3. HỘP NHẠC PIANO DỊU DÀNG (WEB AUDIO API)
+    let audioCtx;
+    const melody = [
+      523.25, 659.25, 783.99, 1046.50, 987.77, 783.99, 659.25, 783.99,
+      587.33, 698.46, 880.00, 1174.66, 1046.50, 880.00, 698.46, 783.99
+    ];
+    function playMusicBox() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      let idx = 0;
+      setInterval(() => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(melody[idx % melody.length], audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 1.5);
+        idx++;
+      }, 440);
+    }
+
+    // 4. HIỆU ỨNG CUỘN TRANG & GÕ BỨC THƯ CUỐI TRANG
+    const letterParagraphs = [
+      "Chúc vợ sắp cưới của anh ngày 20/10 thật nhiều niềm vui, luôn rạng rỡ, mạnh khỏe và bình an trong từng khoảnh khắc.",
+      "Anh không giỏi nói những lời ngọt ngào hay hoa mỹ, nhưng tình cảm, sự yêu thương và trân trọng anh dành cho em luôn trọn vẹn như ngày đầu tiên.",
+      "Cảm ơn em đã tin tưởng nắm tay anh để chúng mình cùng nhau xây dựng một gia đình nhỏ hạnh phúc. Mọi điều tốt đẹp nhất đang chờ hai đứa mình ở phía trước.",
+      "Yêu và thương em rất nhiều! ❤️"
+    ];
+
+    let letterTyped = false;
+    function typeParagraph(elId, text, speed = 40) {
+      return new Promise(resolve => {
+        const el = document.getElementById(elId);
+        let i = 0;
+        const timer = setInterval(() => {
+          el.textContent += text.charAt(i);
+          i++;
+          if (i >= text.length) { clearInterval(timer); resolve(); }
+        }, speed);
+      });
+    }
+
+    async function startLetterTyping() {
+      if (letterTyped) return;
+      letterTyped = true;
+      await typeParagraph('p1', letterParagraphs[0], 35);
+      await typeParagraph('p2', letterParagraphs[1], 35);
+      await typeParagraph('p3', letterParagraphs[2], 35);
+      await typeParagraph('p4', letterParagraphs[3], 45);
+      document.getElementById('pSign').textContent = "— Chồng tương lai của em —";
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('appear');
+          if (entry.target.id === 'letterSection') {
+            startLetterTyping();
+          }
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.story-card, #letterSection').forEach(el => observer.observe(el));
+
+    // Sự kiện chạm mở màn hình đầu
+    document.getElementById('startScreen').addEventListener('click', () => {
+      const s = document.getElementById('startScreen');
+      s.style.opacity = '0';
+      setTimeout(() => s.style.visibility = 'hidden', 900);
+      playMusicBox();
+      document.getElementById('mainContent').classList.add('visible');
+    });
+
+    // 5. VẼ THIỆP QR TRÁI TIM
+    const qrModal = document.getElementById('qrModal');
+    const qrInput = document.getElementById('qrUrlInput');
+    const cardCanvas = document.getElementById('qrCardCanvas');
+    const cCtx = cardCanvas.getContext('2d');
+
+    function renderQrCard(url) {
+      const hidden = document.getElementById('hiddenQr');
+      hidden.innerHTML = '';
+      new QRCode(hidden, { text: url, width: 360, height: 360, colorDark: "#c2185b", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+      setTimeout(() => {
+        const qrImg = hidden.querySelector('img') || hidden.querySelector('canvas');
+        const grad = cCtx.createLinearGradient(0, 0, 600, 750);
+        grad.addColorStop(0, '#ffe4ec'); grad.addColorStop(1, '#ffc1d6');
+        cCtx.fillStyle = grad; cCtx.fillRect(0, 0, 600, 750);
+
+        cCtx.fillStyle = '#ffffff';
+        cCtx.beginPath(); cCtx.roundRect(90, 140, 420, 420, 28); cCtx.fill();
+
+        if (qrImg) cCtx.drawImage(qrImg, 120, 170, 360, 360);
+
+        cCtx.fillStyle = '#fff';
+        cCtx.beginPath(); cCtx.arc(300, 350, 38, 0, Math.PI * 2); cCtx.fill();
+        cCtx.font = '46px sans-serif'; cCtx.textAlign = 'center'; cCtx.textBaseline = 'middle';
+        cCtx.fillText('💍', 300, 353);
+
+        cCtx.fillStyle = '#ad1457'; cCtx.font = 'bold 36px "Quicksand", sans-serif';
+        cCtx.fillText('Gửi Vợ Sắp Cưới Của Anh ❤️', 300, 80);
+        cCtx.font = '600 24px "Quicksand", sans-serif'; cCtx.fillStyle = '#880e4f';
+        cCtx.fillText('Quét mã để mở bức thư ngày 20/10 nhé!', 300, 630);
+      }, 150);
+    }
+
+    document.getElementById('qrBtn').addEventListener('click', () => {
+      qrModal.style.display = 'flex';
+      renderQrCard(qrInput.value);
+    });
+    qrInput.addEventListener('input', () => renderQrCard(qrInput.value));
+    document.getElementById('closeModalBtn').addEventListener('click', () => qrModal.style.display = 'none');
+    document.getElementById('downloadQrBtn').addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.download = 'Thiep-QR-Vo-Yeu-20-10.png';
+      a.href = cardCanvas.toDataURL('image/png');
+      a.click();
+    });
+  </script>
+</body>
+</html>
